@@ -6,7 +6,10 @@ const messages: Record<string, string> = {
   invalid_credentials: "That email or password does not match an account.",
   unauthenticated: "Sign in to continue.",
   invalid_dates: "The end date must be on or after the start date.",
-  not_found: "That semester or course was not found.",
+  not_found: "That item was not found.",
+  unsupported_type: "Use a .pdf, .pptx, or .txt file with a valid file signature.",
+  file_too_large: "The file must be at most 26,214,400 bytes.",
+  empty_file: "The file must not be empty.",
   network: "The server could not be reached.",
 };
 

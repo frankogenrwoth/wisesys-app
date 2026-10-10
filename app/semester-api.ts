@@ -1,4 +1,5 @@
 import { authedRequest } from "./auth-api";
+import { clearDocumentCache, removeDocumentsForCourse } from "./document-api";
 
 const SEMESTERS_KEY = "wisesys.semesters";
 const COURSES_KEY = "wisesys.courses";
@@ -38,6 +39,7 @@ function writeList<T>(key: string, items: T[]) {
 export function clearSemesterCache() {
   sessionStorage.removeItem(SEMESTERS_KEY);
   sessionStorage.removeItem(COURSES_KEY);
+  clearDocumentCache();
 }
 
 export function listSemesters(): Semester[] {
@@ -55,6 +57,9 @@ export function upsertSemester(semester: Semester) {
 }
 
 export function removeSemester(id: string) {
+  const courseIds = listCourses()
+    .filter((course) => course.semester_id === id)
+    .map((course) => course.id);
   writeList(
     SEMESTERS_KEY,
     listSemesters().filter((semester) => semester.id !== id),
@@ -63,6 +68,9 @@ export function removeSemester(id: string) {
     COURSES_KEY,
     listCourses().filter((course) => course.semester_id !== id),
   );
+  for (const courseId of courseIds) {
+    removeDocumentsForCourse(courseId);
+  }
 }
 
 export function listCourses(): Course[] {
@@ -88,6 +96,7 @@ export function removeCourse(id: string) {
     COURSES_KEY,
     listCourses().filter((course) => course.id !== id),
   );
+  removeDocumentsForCourse(id);
 }
 
 export async function createSemester(input: {
