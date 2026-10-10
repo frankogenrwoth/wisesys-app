@@ -1,0 +1,11 @@
+---
+description: This public repo is the frontend for the separate wisesys backend
+alwaysApply: true
+---
+
+# Public frontend
+
+- This repository is the public frontend for the wisesys backend (KnowledgeTree).
+- The backend is a separate project. Do not copy its source, database files, private docs, or local paths into this repo.
+- Never commit secrets: `.env` files, API keys, tokens, credentials, or real `SECRET_KEY` values. Use placeholders in examples.
+- Read backend code only to match its public API. Do not publish internal config, data file paths, or environment values.
