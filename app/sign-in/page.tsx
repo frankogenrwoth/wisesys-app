@@ -28,7 +28,7 @@ export default function SignInPage() {
     setError("");
     setPending(true);
     try {
-      await submitCredentials("/auth/sign-in", data.get("email"), data.get("password"));
+      await submitCredentials("/api/auth/sign-in", data.get("email"), data.get("password"));
       form.reset();
       router.push("/");
     } catch (caught) {

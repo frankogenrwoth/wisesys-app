@@ -2,9 +2,11 @@ export const SESSION_KEY = "wisesys.session";
 
 const messages: Record<string, string> = {
   account_exists: "An account with this email already exists.",
-  invalid_input: "Enter an email containing @ and a password of 8–128 characters.",
+  invalid_input: "Check that names are 1–120 characters and other fields are valid.",
   invalid_credentials: "That email or password does not match an account.",
   unauthenticated: "Sign in to continue.",
+  invalid_dates: "The end date must be on or after the start date.",
+  not_found: "That semester or course was not found.",
   network: "The server could not be reached.",
 };
 
@@ -81,21 +83,25 @@ export async function currentUser(): Promise<MeResponse | null> {
     return null;
   }
   try {
-    return (await request("/auth/me", { headers: authHeaders(token) })) as MeResponse;
+    return (await request("/api/auth/me", { headers: authHeaders(token) })) as MeResponse;
   } catch {
     clearSession();
     return null;
   }
 }
 
-export async function submitCredentials(path: "/auth/sign-in" | "/auth/sign-up", email: FormDataEntryValue | null, password: FormDataEntryValue | null) {
+export async function submitCredentials(
+  path: "/api/auth/sign-in" | "/api/auth/sign-up",
+  email: FormDataEntryValue | null,
+  password: FormDataEntryValue | null,
+) {
   const result = (await request(path, {
     method: "POST",
     headers: authHeaders(null, { "Content-Type": "application/json" }),
     body: JSON.stringify({ email, password }),
   })) as AuthSuccess;
   sessionStorage.setItem(SESSION_KEY, result.session);
-  return (await request("/auth/me", {
+  return (await request("/api/auth/me", {
     headers: authHeaders(result.session),
   })) as MeResponse;
 }
@@ -103,7 +109,7 @@ export async function submitCredentials(path: "/auth/sign-in" | "/auth/sign-up",
 export async function endSession() {
   const token = readSession();
   try {
-    await request("/auth/sign-out", {
+    await request("/api/auth/sign-out", {
       method: "POST",
       headers: authHeaders(token),
     });
@@ -114,4 +120,13 @@ export async function endSession() {
     }
   }
   clearSession();
+}
+
+export async function authedRequest(path: string, init: RequestInit = {}) {
+  const token = readSession();
+  if (!token) {
+    throw new Error("unauthenticated");
+  }
+  const headers = authHeaders(token, init.headers);
+  return request(path, { ...init, headers });
 }

@@ -28,7 +28,7 @@ export default function SignUpPage() {
     setError("");
     setPending(true);
     try {
-      await submitCredentials("/auth/sign-up", data.get("email"), data.get("password"));
+      await submitCredentials("/api/auth/sign-up", data.get("email"), data.get("password"));
       form.reset();
       router.push("/");
     } catch (caught) {

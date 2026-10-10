@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { currentUser, endSession, messageFor } from "./auth-api";
+import { clearSemesterCache } from "./semester-api";
 
 export default function Home() {
   const router = useRouter();
@@ -24,6 +25,7 @@ export default function Home() {
     setPending(true);
     try {
       await endSession();
+      clearSemesterCache();
       router.push("/sign-in");
     } catch (caught) {
       const code = caught instanceof Error ? caught.message : "network";
@@ -68,6 +70,11 @@ export default function Home() {
         <p>
           Account <output>{userId}</output>
         </p>
+        <nav>
+          <p>
+            <Link href="/semesters">Semesters</Link>
+          </p>
+        </nav>
         <button type="button" onClick={signOut} disabled={pending}>
           Sign out
         </button>
